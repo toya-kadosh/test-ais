@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Consulta de Embarcações - Portal da Transparência</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; background: #f9f9f9; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { background: #e3e3e3; }
+  </style>
+</head>
+<body>
+  <h1>Embarcações do Brasil (Portal da Transparência)</h1>
+  <table id="embarcacoes">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Tipo</th>
+        <th>Porto</th>
+        <th>Data Registro</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="4">Carregando...</td></tr>
+    </tbody>
+  </table>
+  <script>
+    fetch('https://api.portaldatransparencia.gov.br/api-de-embarcacoes?uf=BR')
+      .then(response => {
+        if (!response.ok) throw new Error('Erro na resposta da API');
+        return response.json();
+      })
+      .then(data => {
+        const tbody = document.querySelector('#embarcacoes tbody');
+        tbody.innerHTML = '';
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4">Nenhum dado encontrado.</td></tr>';
+        } else {
+          data.forEach(item => {
+            tbody.innerHTML += `<tr>
+              <td>${item.nome || '-'}</td>
+              <td>${item.tipo || '-'}</td>
+              <td>${item.portoRegistro || '-'}</td>
+              <td>${item.dataRegistro || '-'}</td>
+            </tr>`;
+          });
+        }
+      })
+      .catch(error => {
+        const tbody = document.querySelector('#embarcacoes tbody');
+        tbody.innerHTML = `<tr><td colspan="4">Erro ao buscar dados: ${error.message}</td></tr>`;
+      });
+  </script>
+</body>
+</html>
